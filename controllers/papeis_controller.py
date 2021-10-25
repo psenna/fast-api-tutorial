@@ -1,16 +1,15 @@
+from typing import List
 from fastapi import APIRouter
 
 from models.papel import Papel
 
 router = APIRouter()
 
-banco_de_dados = []
+@router.post("/", response_model=Papel)
+async def add_item(papel: Papel):
+    await papel.save()
+    return papel
 
-@router.post("/")
-def add_item(item: Papel):
-    banco_de_dados.append(item)
-    return item
-
-@router.get("/")
-def list_item():
-    return banco_de_dados
+@router.get("/", response_model=List[Papel])
+async def list_item():
+    return await Papel.objects.all()
