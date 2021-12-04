@@ -130,3 +130,4 @@ dmypy.json
 fastapi-env
 db.sqlite
 tests/testedb.sqlite
+testedb.sqlite

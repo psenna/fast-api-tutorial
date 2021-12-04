@@ -2,6 +2,8 @@ from fastapi.testclient import TestClient
 from models.papel import Papel
 from tests.utils.papeis import create_papel_invalido, create_papel_valido
 import asyncio
+import pytest
+import ormar
 
 def test_cria_papel(client: TestClient) -> None:
     body = create_papel_valido()
@@ -59,6 +61,28 @@ def test_update_papel_inexistente(client: TestClient) -> None:
     atributos_para_atualizar = {"nome": novo_nome}
 
     response = client.patch(f"/papeis/1", json=atributos_para_atualizar)
+    content = response.json()
+
+    assert response.status_code == 404
+    assert content["mensagem"] == "Entidade não encontrada"
+
+
+def test_delete_papel_existente(client: TestClient) -> None:
+    atributos = create_papel_valido()
+    papel = Papel(**atributos)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(papel.save())
+
+    response = client.delete(f"/papeis/{papel.id}")
+
+    with pytest.raises(ormar.exceptions.NoMatch): 
+        loop.run_until_complete(Papel.objects.get(id=papel.id))
+
+    assert response.status_code == 200
+
+
+def test_delete_papel_inexistente(client: TestClient) -> None:
+    response = client.delete(f"/papeis/1")
     content = response.json()
 
     assert response.status_code == 404
