@@ -35,7 +35,7 @@ def test_obtem_papel_inexistente_por_id(client: TestClient) -> None:
     content = response.json()
 
     assert response.status_code == 404
-    assert content["mensagem"] == "Entidade não encontrada"
+    assert content["detail"] == "Entidade não encontrada"
 
 def test_update_papel_existente(client: TestClient) -> None:
     atributos = create_papel_valido()
@@ -64,7 +64,7 @@ def test_update_papel_inexistente(client: TestClient) -> None:
     content = response.json()
 
     assert response.status_code == 404
-    assert content["mensagem"] == "Entidade não encontrada"
+    assert content["detail"] == "Entidade não encontrada"
 
 
 def test_delete_papel_existente(client: TestClient) -> None:
@@ -86,4 +86,4 @@ def test_delete_papel_inexistente(client: TestClient) -> None:
     content = response.json()
 
     assert response.status_code == 404
-    assert content["mensagem"] == "Entidade não encontrada"
+    assert content["detail"] == "Entidade não encontrada"
