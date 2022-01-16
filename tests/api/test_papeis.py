@@ -5,6 +5,18 @@ import asyncio
 import pytest
 import ormar
 
+def test_lista_todos_os_papeis(client: TestClient) -> None:
+    atributos = create_papel_valido()
+    papel = Papel(**atributos)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(papel.save())
+    
+    response = client.get("/papeis/")
+    content = response.json()
+
+    assert response.status_code == 200
+    assert len(content) == 1
+
 def test_cria_papel(client: TestClient) -> None:
     body = create_papel_valido()
     response = client.post("/papeis/", json=body)
