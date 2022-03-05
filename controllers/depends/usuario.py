@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -33,3 +33,18 @@ async def get_usuario_logado(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+def get_user_com_funcao(funcoes:List[str]=[]):
+    def inner(usuario_logado: Usuario = Depends(get_usuario_logado)) -> Usuario:
+        if not len(funcoes):
+            return usuario_logado
+        
+        for funcao in funcoes:
+            if funcao in usuario_logado.funcoes:
+                return usuario_logado
+
+        raise HTTPException(
+            status_code=403, detail="O usuário não possui permissão para realizar essa ação!"
+        )
+    return inner
+    
